@@ -18,13 +18,15 @@ sleep 120
 # DISTRIBUTION_NAME=$(eval "curl -s https://wso2.org/jenkins/job/products/job/streaming-integrator/$buildNumber/api/json | python3 -c \"import sys, json; print(json.load(sys.stdin)['artifacts'][5]['fileName'])\"")
 DISTRIBUTION_NAME=wso2-streaming-integrator-1.0.1-SNAPSHOT.zip #need to automate
 echo $DISTRIBUTION_NAME
+TEMP=${DISTRIBUTION_NAME%.zip}
+DISTRIBUTION_VERSION=${TEMP#wso2-streaming-integrator-}
 
 rm -fr docker-build
 rm -fr streaming-integrator
 rm -f $DISTRIBUTION_NAME
 
-wget --progress=dot:mega https://wso2.org/jenkins/job/products/job/micro-integrator/$buildNumber/artifact/distribution/target/$DISTRIBUTION_NAME
-wget https://wso2.org/jenkins/job/products/job/streaming-integrator/115/org.wso2.ei\$wso2-streaming-integrator/artifact/org.wso2.ei/wso2-streaming-integrator/1.0.1-SNAPSHOT/wso2-streaming-integrator-1.0.1-SNAPSHOT.zip
+#wget --progress=dot:mega https://wso2.org/jenkins/job/products/job/micro-integrator/$buildNumber/artifact/distribution/target/$DISTRIBUTION_NAME
+wget https://wso2.org/jenkins/job/products/job/streaming-integrator/$buildNumber/org.wso2.ei\$wso2-streaming-integrator/artifact/org.wso2.ei/wso2-streaming-integrator/$DISTRIBUTION_VERSION/$DISTRIBUTION_NAME
 
 git clone --depth=50 https://github.com/wso2/streaming-integrator.git
 mkdir docker-build
@@ -32,8 +34,6 @@ cp streaming-integrator/modules/distribution/src/docker-distribution/filtered/Do
 unzip -q $DISTRIBUTION_NAME -d docker-build
 
 cd docker-build
-TEMP=${DISTRIBUTION_NAME%.zip}
-DISTRIBUTION_VERSION=${TEMP#wso2-streaming-integrator-}
 DISTRIBUTION_ROOT=wso2si-${DISTRIBUTION_VERSION}
 
 mv $DISTRIBUTION_ROOT wso2si
